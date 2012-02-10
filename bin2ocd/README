@@ -1,0 +1,14 @@
+
+This is bin2ocd - a utility to convert binary
+files into a format which can be used as a
+macro by the Macraigor OCD commander.
+
+The macros can then be used to load a given
+memory region using jtag. 
+
+bin2ocd understands a few commandline options,
+use -h to see them. 
+
+A simple example use:
+
+  bin2ocd -b 0x70000000 file.bin > file.mac

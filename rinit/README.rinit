@@ -1,0 +1,111 @@
+This is rinit (Roach Initialiser). This utility gets built
+with the command 
+
+  make PROJECT=rinit
+
+rinit is a bootloader which fits into 4kb of memory. Rinit is 
+small enough to be loaded up via jtag in reasonable
+time.
+
+rinit's main function is to program flash using xmodem
+over the first serial port (115200N1). Other functions 
+include flash erase and checksums. 
+
+rinit is rather cryptic - at startup it prints a short
+sequence of capital letters, starting with A and ending
+with G, indicating its initialisation progress. 
+
+rinit does not print a prompt. All commands are single
+letters. 
+
+Rinit implements two virtual registers A and B. These
+are used to set addresses for programming, erasing or
+checksumming. 
+
+Rinit understands the following commands
+
+'a'    Set the content of the A register
+
+'b'    Copy A register to B register
+
+'i'    Display both registers
+
+'e'    Erase the flash sector to which register A points
+
+'x'    initiate xmodem receive, save content to flash region
+       starting at register A, save the end address to register B. 
+       
+       Note: The xmodem timeout very is short, ensure that only a 
+       small interval elapses between issuing this command and starting 
+       the sending utility
+
+'s'    Save rinit to end of flash
+
+'j'    Transfer control to location in register A
+
+'r'    Read memory location pointed to by register A
+
+'R'    Add 4 to register A and print corresponding memory location 
+
+'w'    Write content of register B to memory location pointed to by A
+        
+#ifdef FPGA
+'m'    Program FPGA with an image transferred via xmodem. The same
+       note applies as for the 'x' command
+#endif
+
+#ifdef ADLER
+'c'    Compute a checksum for location from register A to B. 
+#endif
+
+'E'    Performs a chip erase. Requires a substantial amount of time, 
+       use the 'p' command to establish when the erase completes
+
+'p'    Poll for flash command completion
+
+
+Rinit displays a single lowercase character when receiving a 
+critical exception. 
+
+Rinit can boot out of flash or OCM, but will always transfer
+itself into OCM. 
+
+Rinit sets up an unconventional memory map. Virtual memory
+looks as follows:
+
+0x60000000 - 0x64000000:    Flash
+0x64000000 - 0x66000000:    CPLD
+0x60000000 - 0x68000000:    SMAP
+0x68000000 - 0x70000000:    FPGA
+0x70000000 - 0x70100000:    IO region (serial)
+0x71000000 - 0x71004000:    On chip memory
+
+The Makefile will generate
+
+rinit.bin   - a 4k raw binary file
+rinit.mac   - a macraigor macro file (requires bin2ocd)
+rinit.elf   - an elf version of the loader
+rinit-dis.S - a disassembled version of rinit
+
+To load rinit, use the macraigor OCD commander
+
+  reset the processor
+  run rinit.mac
+  make the processor go
+
+Typical commands to program uboot into flash from rinit
+
+  a
+  63ff0000
+  e
+  a
+  63fc0000
+  e
+  a
+  63fa0000
+  e
+  x
+
+Then send file via xmodem - using minicom (<control-a> s), but
+take care to select file quickly
+

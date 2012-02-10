@@ -1,0 +1,36 @@
+This is program (the roach PROGRAMMer), a simple 
+xmodem flash programmer. This utility gets built
+with the command 
+
+  make PROJECT=program
+
+The output of program is program.mac, a file which
+can get loaded using the macraigor programmer. 
+
+Once program.mac is loaded and run, it will
+attempt to program the last 3 flash sectors with a
+uboot image via xmodem (on the serial port). The
+xmodem command has to be started within a one or 
+two seconds after program.mac starts running, otherwise
+it times out.
+
+Using the macraigor OCD commander, perform the following steps:
+
+  connect up the processor jtag cable
+
+  connect up a serial cable
+
+  start a terminal emulator (115200N1) which can perform xmodem transfers
+
+  start the macraigor OCD commander
+
+  reset the processor (reset button on OCD commander)
+
+  run the program.mac script
+
+  make the processor go (press go on OCD commander)
+
+  immediately afterwards initiate the xmodem transfer of a uboot image
+
+  when the transfer completes the processor gets reset and should run uboot
+

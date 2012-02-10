@@ -1,0 +1,101 @@
+
+Roach (Reconfigurable Open Architecture Computing Hardware)
+-----------------------------------------------------------
+
+The roach uboot port re-uses much of the sequoia code, as
+the roach uses the same processor (440EPX)
+
+Major differences are that the roach does not use PCI
+or NAND flash, and only uses one ethernet port. However
+the roach does map more devices onto the external processor
+bus (such as a rather large FPGA). The roach also allocates one 
+DIMM slot to the 440EPX, so the uboot port does not hardcode 
+memory parameters
+
+Serial
+--------
+
+Default serial speed is 115200
+
+Ethernet
+--------
+
+To use the ethernet device, one first needs to set a MAC 
+address. After uboot has booted up type
+
+ => setenv ethaddr xx:xx:xx:xx:xx:xx
+
+The mac address then needs to be saved to the uboot 
+environment with the command
+
+ => saveenv
+
+this will also remove the warning message that the environment
+checksum fails
+
+Boot Configurations
+-------------------
+
+Initially the 440EPX can boot using configuration B, a 
+set of hardcoded and more conservative values
+
+In order to use configuration H, the serial eeprom needs to
+be set up. An empty serial eeprom looks as follows:
+
+  => imd 0x52 0.1 10
+  0000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff    ................
+
+To program the eeprom use the below commands:
+
+  => imw 0x52 0.1 87
+  => imw 0x52 1.1 78
+  => imw 0x52 2.1 82
+  => imw 0x52 3.1 52
+  => imw 0x52 4.1 09
+  => imw 0x52 5.1 57
+  => imw 0x52 6.1 a0
+  => imw 0x52 7.1 30
+  => imw 0x52 8.1 40
+  => imw 0x52 9.1 08
+  => imw 0x52 a.1 23
+  => imw 0x52 b.1 50
+  => imw 0x52 c.1 0d
+  => imw 0x52 d.1 05
+  => imw 0x52 e.1 00
+  => imw 0x52 f.1 00
+
+Once programmed, querying the eeprom should give the following 
+output:
+
+  => imd 0x52 0.1 10
+  0000: 87 78 82 52 09 57 a0 30 40 08 23 50 0d 05 00 00    .x.R.W.0@.#P....
+
+Uboot updates
+-------------
+
+Uboot can save a new version of itself to flash by a number of means,
+a simple approach is to use ymodem
+
+  => loady 200000
+  => run update
+
+Roach test
+----------
+
+The roachtest command can be used to run a set of test functions
+on several hardware components. This command requires that the
+appropriate bit files are available on a usb storage device
+
+Roach monitor
+-------------
+
+The roach monitor command can be used to display and monitor the
+voltage,current and temperature values output by the Actel Fusion
+FPGA configured as the roach monitor.
+
+Selectmap programming
+---------------------
+
+The roach uboot port can program the fpga using the smap command, which
+writes the content starting at a given memory location to the fpga
+

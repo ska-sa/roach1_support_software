@@ -1,0 +1,19 @@
+
+* Work in progress, not yet usable *
+
+  - a bit scary - to many objects/structures wrap too many 
+    layers, the plan was to have a fair bit of the multiserver
+    api be the same as the plain katcp one, unsure if that has
+    been a success. 
+    
+    Also, the message (mul_msg) structure (and api) is rather similar
+    to the katcp one, except the latter does immediate escaping. 
+    The two could be folded somehow
+
+Preliminary work towards a control server
+
+  - requires libloop (external package)
+  - requires libkatcp (kat control protocol library)
+
+
+

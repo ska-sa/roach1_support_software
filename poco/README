@@ -1,0 +1,16 @@
+
+Notes for Wed Aug 26 17:34:14 SAST 2009
+
+  - coarse delay parser incomplete (poco_delay_cmd in poco.c)
+
+  - poco_delay_cmd should schedule run_fixer in fixer.c, or 
+    call schedule_fixer which then schedules run_fixer 
+
+  - the dram logic should look at the stamp value to check that we 
+    are starting at the correct point (in run_dram in dram.c)
+
+  - poco-snap-shot to be done
+
+  - meta and data packets should report timestamp information (timestamp
+    and timestamp scaling)
+

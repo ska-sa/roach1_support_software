@@ -1,0 +1,54 @@
+Check if I write to control or control0, ensuring that I preserve info on control0, not control
+
+Have toggle ram schedule periodic runs better, so that
+it happens closer to start time
+
+Write support logic to deal with high precision timing/mcount
+without requiring fpu
+
+Start work on fine delay/phase shifts
+
+Implement stubs for fine delay functions
+
+# Re-implement sensor logic
+
+/**********************************************************************/
+
+request mode change
+run  borph file
+enter programming mode
+enter poco mode
+
+in poco
+
+  - init 10Gbe interfaces, set local ip/mac
+  
+  - arm/sync: check that pps was received and device locked (read register after timeout)
+    issue inform to tell when pps synced clocks (time zero)
+
+  - set fft shift
+
+- capture destination
+
+- capture start
+
+Error  conditions
+-----------------
+
+  - 10Gbe network status (rx, tx, link)
+  - ADC overrange
+
+More notes
+----------
+
+Deal with aborted borph processes sanely - currently only
+a core watch is notified - should show up in the
+poco logic somewhow too, otherwise it thinks everything is still
+ok
+
+
+
+
+
+
+

@@ -1,0 +1,18 @@
+#Identification query
+*IDN?
+#RESET and Clear Status Register
+*RST;*CLS
+#set the frequency to a certain value - include the units
+FREQ 100MHz
+#read the frequency value
+FREQ?
+#set the power level
+POW 10dB
+#read the power level
+POW?
+#check the RF output status
+OUTP:STAT?
+#switch ON the RF output
+OUTP:STAT ON
+#check the RF output status
+OUTP:STAT?

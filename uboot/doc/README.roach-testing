@@ -1,0 +1,75 @@
+
+Built-In Testing
+----------------
+
+  run bit
+
+runs a sequence of built-in tests. Once the tests
+complete, a simple test report is displayed. The tests
+are named, with the following notes:
+
+* net-dhcp - this test requires the board to 
+be connected to a network where dhcp is available. Note that 
+the roach uses a locally assigned mac (02:02:02:02:02:02)
+address for this test
+
+* usb-load - requires a fat formatted usb storage device (memory 
+stick) to be plugged into the board containing the file roach_bsp.bin
+
+
+EEPROM Configuration
+--------------------
+
+  run init_eeprom
+
+programs the processor configuration profile to eeprom. 
+It is necessary to run this command once before enabling
+boot configuration H (by default the board starts in a 
+failsafe configuration B running at lower speeds).
+
+
+Random Notes
+------------
+
+Below some lower level checking notes
+
+# can be made into a preboot macro for automated test
+report clear
+# setenv ethaddr 00:01:02:03:04:05
+check 1000Mb-net-0-test ping 192.168.1.1
+usb start
+# TODO: get image to program fpga with from somewhere 
+check select-map-programming roachsmap 0x200000 
+# TODO: need wait for device to settle 
+check cpld-probe roachcpld
+check fpga-test roachfpga
+check fpga-dram-test roachddr
+check qdr-0-test roachqdr 0
+check qdr-1-test roachqdr 1
+check adc-0-test roachadc 0
+check adc-1-test roachadc 1
+check 10Gb-net-0-test roach10ge 0
+check 10Gb-net-1-test roach10ge 1
+check 10Gb-net-2-test roach10ge 2
+check 10Gb-net-3-test roach10ge 3
+# TODO: i2c checks, including programming
+# basic mem check possibly (superfluous in a way, boot up does ram check)
+mw.l 0x200000 0xdeadbeef 200
+mw.l 0x200800 0xff5aa500 100
+mw.l 0x200c00 0x3c00ffc3 100
+mw.l 0x201000 0 400
+check mem-zero     cmp 0x201000 0x201800 800
+cp.b 0x200000 0x201000 1000
+check mem-mem-cp   cmp 0x200000 0x201000 1000
+# basic flash write check (just in case chips are factory programmed)
+cp.b 0xfc000000 0x200000 1000
+check flash-mem-cmp cmp 0x200000 0x201000 1000
+check flash-erase   erase 0xfc000000 +1000
+check flashcp.b  0x200000 0xfc000000 1000
+check flash-write cmp 0x201000 0xfc000000 1000
+# todo - mmc
+# todo - fpga interfaces
+# serial is implied
+check serial-output echo serial check
+# unknown - excercise bus interfaces to fpga
+report

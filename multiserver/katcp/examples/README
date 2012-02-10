@@ -1,0 +1,7 @@
+server-example.c - an example of a server listening to connections,
+                   accepting them and processing requests from 
+                   clients
+
+client-example.c - an example of something connecting to a server
+                   and issuing requests (here for borph reads/writes).
+

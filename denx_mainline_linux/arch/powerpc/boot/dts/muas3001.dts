@@ -1,0 +1,257 @@
+/*
+ * muas3001 Device Tree Source
+ *
+ * Copyright 2008 DENX Software Engineering GmbH
+ *                Heiko Schocher <hs@denx.de>
+ *
+ * This program is free software; you can redistribute  it and/or modify it
+ * under  the terms of  the GNU General  Public License as published by the
+ * Free Software Foundation;  either version 2 of the  License, or (at your
+ * option) any later version.
+ */
+
+/dts-v1/;
+/ {
+	model = "MUAS3001";
+	compatible = "iai,muas3001";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		PowerPC,8270@0 {
+			device_type = "cpu";
+			reg = <0>;
+			d-cache-line-size = <32>;
+			i-cache-line-size = <32>;
+			d-cache-size = <16384>;
+			i-cache-size = <16384>;
+			bus-frequency = <0>; /* Filled in by U-Boot */
+			timebase-frequency = <0>; /* Filled in by U-Boot */
+			clock-frequency = <0>; /* Filled in by U-Boot */
+		};
+	};
+
+	memory {
+		device_type = "memory";
+		reg = <0 0>; /* Filled in by U-Boot */
+	};
+
+	localbus@f0010100 {
+		compatible = "fsl,mpc8272-localbus",
+		             "fsl,pq2-localbus",
+			     "simple-bus";
+		#address-cells = <2>;
+		#size-cells = <1>;
+		reg = <0xf0010100 0x40>;
+
+		ranges = <0 0 0xff000000 0x01000000
+		          4 0 0xc0000000 0x00080000>;
+
+		flash@0,0 {
+			compatible = "cfi-flash";
+			reg = <0 0x0 0x1000000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+			bank-width = <4>;
+			partition@0 {
+				label = "u-boot";
+				reg = <0 0x40000>;
+			};
+			partition@0x40000 {
+				label = "env";
+				reg = <0x40000 0x10000>;
+			};
+			partition@0x50000 {
+				label = "kernel";
+				reg = <0x50000 0x1b0000>;
+			};
+			partition@0x200000 {
+				label = "dtb";
+				reg = <0x200000 0x10000>;
+			};
+			partition@0x210000 {
+				label = "ramdisk";
+				reg = <0x210000 0x1f0000>;
+			};
+			partition@0x400000 {
+				label = "user";
+				reg = <0x400000 0xc00000>;
+			};
+	
+		};
+		cpld@4,0 {
+			compatible = "iai,cpld";
+			interrupts = <0x0c 8>;
+			interrupt-parent = <&PIC>;
+			timeout = <41250>;
+		};
+
+	};
+
+	soc@f0000000 {
+		#address-cells = <1>;
+		#size-cells = <1>;
+		device_type = "soc";
+		compatible = "fsl,mpc8272", "fsl,pq2-soc", "simple-bus";
+		ranges = <0x00000000 0xf0000000 0x00053000>;
+
+		// Temporary -- will go away once kernel uses ranges for get_immrbase().
+		reg = <0xf0000000 0x00053000>;
+
+		cpm@119c0 {
+			#address-cells = <1>;
+			#size-cells = <1>;
+			#interrupt-cells = <2>;
+			compatible = "fsl,mpc8272-cpm", "fsl,cpm2", "simple-bus";
+			reg = <0x119c0 0x30>;
+			ranges;
+
+			muram@0 {
+				#address-cells = <1>;
+				#size-cells = <1>;
+				ranges = <0 0 0x10000>;
+
+				data@0 {
+					compatible = "fsl,cpm-muram-data";
+					reg = <0x0 0x4000 0x8000 0x4000>;
+				};
+			};
+
+			brg@119f0 {
+				compatible = "fsl,mpc8272-brg",
+				             "fsl,cpm2-brg",
+				             "fsl,cpm-brg";
+				reg = <0x119f0 0x10 0x115f0 0x10>;
+				clock-frequency = <0>;	/* Filled in by U-Boot */
+			};
+
+			smc1: serial@11a80 {
+				device_type = "serial";
+				compatible = "fsl,mpc8270-smc-uart",
+				             "fsl,cpm2-smc-uart";
+				model = "SMC";
+				reg = <0x11a80 0x20 0x87fc 0x2>;
+				interrupts = <0x04 8>;
+				interrupt-parent = <&PIC>;
+				fsl,cpm-brg = <7>;
+				fsl,cpm-command = <0x1d000000>;
+				current-speed = <115200>;
+			};
+
+			/* SCC1 */
+			serial@11a00 {
+				device_type = "serial";
+				compatible = "fsl,mpc8270-scc-uart",
+				             "fsl,cpm2-scc-uart";
+				reg = <0x11a00 0x20 0x8000 0x100>;
+				interrupts = <0x28 8>;
+				interrupt-parent = <&PIC>;
+				fsl,cpm-brg = <1>;
+				fsl,cpm-command = <0x00800000>;
+			};
+
+			/* SCC2 */
+			serial@11a20 {
+				device_type = "serial";
+				compatible = "fsl,mpc8270-scc-uart",
+				             "fsl,cpm2-scc-uart";
+				reg = <0x11a20 0x20 0x8100 0x100>;
+				interrupts = <0x29 8>;
+				interrupt-parent = <&PIC>;
+				fsl,cpm-brg = <2>;
+				fsl,cpm-command = <0x04a00000>;
+			};
+
+			/* SCC3 */
+			serial@11a40 {
+				device_type = "serial";
+				compatible = "fsl,mpc8270-scc-uart",
+				             "fsl,cpm2-scc-uart";
+				reg = <0x11a40 0x20 0x8200 0x100>;
+				interrupts = <0x2a 8>;
+				interrupt-parent = <&PIC>;
+				fsl,cpm-brg = <3>;
+				fsl,cpm-command = <0x08c00000>;
+			};
+
+			/* SCC4 */
+			serial@11a60 {
+				device_type = "serial";
+				compatible = "fsl,mpc8270-scc-uart",
+				             "fsl,cpm2-scc-uart";
+				reg = <0x11a60 0x20 0x8300 0x100>;
+				interrupts = <0x2b 8>;
+				interrupt-parent = <&PIC>;
+				fsl,cpm-brg = <4>;
+				fsl,cpm-command = <0x0ce00000>;
+			};
+
+			mdio@10d40 {
+				device_type = "mdio";
+				compatible = "fsl,mpc8272ads-mdio-bitbang",
+				             "fsl,mpc8270-mdio-bitbang",
+				             "fsl,cpm2-mdio-bitbang";
+				reg = <0x10d00 0x14>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+				fsl,mdio-pin = <10>;
+				fsl,mdc-pin = <9>;
+
+				PHY0: ethernet-phy@1 {
+					interrupt-parent = <&PIC>;
+					interrupts = <17 8>;
+					reg = <1>;
+					device_type = "ethernet-phy";
+				};
+
+			};
+
+			ethernet@11300 {
+				device_type = "network";
+				compatible = "fsl,mpc8270-fcc-enet",
+				             "fsl,cpm2-fcc-enet";
+				reg = <0x11300 0x20 0x8400 0x100 0x11390 0x1>;
+				mac-address = [ 00 00 00 00 00 00 ];  /* Filled in by U-Boot */
+				interrupts = <0x20 8>;
+				interrupt-parent = <&PIC>;
+				phy-handle = <&PHY0>;
+				linux,network-index = <0>;
+				fsl,cpm-command = <0x12000300>;
+			};
+
+			i2c@11860 {
+				compatible = "fsl,mpc8280-i2c",
+						"fsl,cpm2-i2c";
+				reg = <0x11860 0x20 0x8afc 0x2>;
+				interrupts = <0x1 8>;
+				interrupt-parent = <&PIC>;
+				fsl,cpm-command = <0x29600000>;
+				linux,i2c-class = <1>;
+				clock-frequency = <100000>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				sensor@48 {
+					compatible = "linux,lm75";
+					reg = <0x48>;
+				};
+			};
+
+		};
+
+		PIC: interrupt-controller@10c00 {
+			#interrupt-cells = <2>;
+			interrupt-controller;
+			reg = <0x10c00 0x80>;
+			compatible = "fsl,mpc8272-pic", "fsl,cpm2-pic";
+		};
+
+	};
+
+	chosen {
+		linux,stdout-path = "/soc/cpm/serial@11a80";
+	};
+};

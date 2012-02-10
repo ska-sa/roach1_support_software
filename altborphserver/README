@@ -1,0 +1,25 @@
+
+Alternative borph server
+------------------------
+
+A version of the borph server which uses the kat control protocol.
+This code is intended to be run on a bee2 to illustrate how the 
+kat control infrastructure looks.
+
+altborphserver needs to link against libkatcp, so the library
+has to be built first. 
+
+The C library lives in lib/katcp, python and java libraries which can 
+speak katcp to altborphserver are be found in the software svn 
+repository, 
+
+altborphserver implements all commands other than exec found in the 
+cborphserver.
+
+altborphserver provides a help command - telnet into the server
+and type "?help" to see the list of commands. All commands
+start with an "?".
+
+The kat control protocol escapes certain characters with a \, so
+use \n, \r, \\, \ , and \0 to escape newline, carriage return,
+backslash, space and null. 

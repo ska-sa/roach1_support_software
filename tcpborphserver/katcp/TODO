@@ -1,0 +1,24 @@
+Todo:
+
+  Provide signed integer 
+
+  Use BNF syntax for help messages
+
+  more supporting functions
+
+  block EPIPE or use send with nosignal
+
+  make file descriptors nonblocking (safer in production, but masks logic errors )
+
+  possible shutdown/restart logic
+
+
+
+  Fix reporting unset sensor values for getvalue if sensor not enabled
+
+  Provide better help for commands
+
+  Do mode broadcasts and general broadcast functions
+
+  Fix sensor api to include max fd, so that select has a chance
+  of working properly

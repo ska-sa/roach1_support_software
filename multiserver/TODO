@@ -1,0 +1,73 @@
+
+Come up with a useful abstraction for the
+client to issue commands to subordinate
+systems (leaves), then block and resume
+easily. 
+
+Further complications: Return codes need
+to indicate what the dispatch function wants
+to wait for. Timeouts for leaf nodes can be
+folded into waits, but busy and io functions
+may still require extra treatment
+
+Possible options:
+
+  - a state machine set up as a table/matrix
+
+  - a state machine set up via a function 
+    pointer
+
+Wed Dec  3 10:16:11 SAST 2008
+
+Have a decent way of addressing different
+types of leaves, including addressing groups
+and possibly leaves which are not known at 
+compile time 
+
+Have some tests covering more corner cases,
+leaf failure types, timeout logic
+
+Think about synthetic leaves, nodes which 
+do work internally
+
+Possibly automate the steps needed to start
+a multiserver, a leaf server and run some test
+commands
+
+Possibly have cleanup logic in the FAIL transition
+to make sure no xlookup function leaves outstanding
+request in queue (or drop connection if requests
+are outstanding) [generic collect now collects
+beyond point of failure]
+
+Thu Dec  4 11:04:25 SAST 2008
+
+Figure out a useful way of having state available
+to xlookup table functions, may be needed for
+builtin ones too.
+
+Tue Dec  9 11:00:44 SAST 2008
+
+Possibly have a proxy/connection management
+node responsible for keeping leaf nodes alive
+and sorting out the naming (target)
+
+Wed Dec 17 16:52:08 SAST 2008
+
+Now have an interior node which doesn't have
+a client to output to but does have the
+same state machine logic. Unclear how this
+node communicates to its invoking functions:
+  
+  - have a different message type with a 
+    filter for messages prepared to accept
+
+  - bypass messages entirely, downside - breakes
+    the message passing framework entirely
+
+  - change behaviour on type of message (request
+    implies a superior node, reply a leaf ?) - downside
+    is that a rouge leaf can confuse things badly 
+
+  - have a support function which gets run out of the
+    state machine to report back to its creator ?

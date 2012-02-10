@@ -1,0 +1,101 @@
+.TH sg_monitor 1 "12 November 2009"
+
+.SH NAME  
+sg_monitor \- controls and monitor the signal generator via RS232 using remote control commands
+.SH SYNOPSIS 
+.B  sg_monitor
+[OPTIONS] 
+.SH DESCRIPTION
+
+The communication between the server machine and signal generator must be working if the RS232 transmission parameters are set to be the same, and according to signal generator because it has some linits.
+8 \- data bits, 1 \- start and stop bit, no parity bit, then the baud rate must be the same.
+.PP
+
+The arguments (or options) are divided into two groups, short cut and full commands. The application first interpretes the short cut commands and then compile the full command that can be sent to signal generator. Then the full commands are the one that sent directly to the signal generator as they are. 
+
+.SH OPTIONS
+The short cut commands are showned below:
+.TP
+help | -h
+display a short help text
+.TP
+config [file_name]
+specify the configuration file name (in a text format i.e. xxx.txt) - and it should be written in full commands, see config_file.txt
+.TP
+\-e | \-e?
+check if error exist, and if so then a detailed error status is reported.
+.TP
+\-s | \-s?
+request RF value and output status, power level and state if it was on manual mode or not.
+.TP
+\-d device:baud_rate 
+specify the device:baud rate. DEVICE and BAUD_RATE are environment variables.
+.TP
+\-i or \-i?
+queries the instrument identification.
+.TP
+\-r
+reset the device.
+.TP
+\-c 
+clear status register.
+.TP
+\-f | \-f?
+request the RF frequency, the response units are in Hz.
+.TP
+\-f value[units]
+Setting the RF signal, Hz is the default units, NO SPACE between value and units, i.e 100MHz
+.TP
+\-p or \-p?
+request power level of the RF signal.
+.TP
+\-p value[units]
+set the RF power level
+.TP
+\-o or \-o?
+request RF output status, 0 - means switched Off and 1 means On.
+.TP
+\-o ON|OFF
+set the RF signal output.
+.PP
+
+
+The full commands are shown below (for more commands refer to signal generator operation manual, remote control commands):
+.PP
+.TP
+.B *IDN? 
+queries the instrument identification. The instrument type, serial number and firmware version are returned.
+.TP
+.B FREQ? | FREQUENCY? | SOUR:FREQ? | SOURCE:FREQUENCY?
+request the RF frequency, the response units are in Hz.
+.TP
+.B POW? | POWER? | SOUR:POW? | SOURCE:POWER?
+request the RF level, the response is in dBm
+.TP
+.B OUTPUT ON
+switch On RF output signal.
+.TP
+.B OUTPUT?
+request RF output signal - 0 means Off and 1 means On.
+
+.SH EXAMPLES
+.TP
+request the RF frequency, the response units are in Hz:
+.B sg_monitor
+\-f
+.PP
+.TP
+set the RF signal to 100MHz and power level to -10 dBm and then request the RF signal and its power level to confirm if the settings were done sucessfully: 
+.B sg_monitor
+[\-f 100MHz -p -10dBm -f -p] | [FREQ 100MHz POW -10dBm FREQ? POWER?]
+.TP
+reset the instrument, and then clear the status register.
+.B sg_monitor
+*RST;CLS
+
+.SH EXIT STATUS
+.B sg_monitor
+returns a zero if it succeeds to execute a command or query. Non zero is returned in case of failure. 
+
+.TH AUTHOR
+Sifiso Mthembu at SKA SA
